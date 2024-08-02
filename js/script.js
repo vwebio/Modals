@@ -1,7 +1,8 @@
 // Функция контроллера модальных окон
 const modalController = ({ modal, btnOpen, btnClose, time = 300 }) => {
-    const buttonElems = document.querySelectorAll(btnOpen); // Кнопки для открытия модального окна
-    const modalElem = document.querySelector(modal); // Модальное окно
+
+    const buttonElems = document.querySelectorAll(btnOpen); 
+    const modalElem = document.querySelector(modal); 
   
     modalElem.style.cssText = `
       display: flex;
@@ -15,39 +16,36 @@ const modalController = ({ modal, btnOpen, btnClose, time = 300 }) => {
       const target = event.target;
   
       if (
-        target === modalElem || // Клик по самому модальному окну
-        (btnClose && target.closest(btnClose)) || // Клик по кнопке закрытия
-        event.code === 'Escape' // Нажатие клавиши "Escape"
+        target === modalElem ||
+        (btnClose && target.closest(btnClose)) || 
+        event.code === 'Escape' 
       ) {
-        modalElem.style.opacity = 0; // Установка прозрачности для плавного закрытия
+        modalElem.style.opacity = 0; 
   
         setTimeout(() => {
-          modalElem.style.visibility = 'hidden'; // Скрытие окна после завершения анимации
+          modalElem.style.visibility = 'hidden';
           scrollController.enableScroll(); // Включение прокрутки страницы
         }, time);
   
-        window.removeEventListener('keydown', closeModal); // Удаление обработчика события нажатия клавиши
+        window.removeEventListener('keydown', closeModal); 
       }
     }
   
     // Функция открытия модального окна
     const openModal = () => {
-      modalElem.style.visibility = 'visible'; // Видимость окна
-      modalElem.style.opacity = 1; // Непрозрачность для плавного открытия
-      window.addEventListener('keydown', closeModal); // Добавление обработчика события нажатия клавиши для закрытия
+      modalElem.style.visibility = 'visible'; 
+      modalElem.style.opacity = 1; 
+      window.addEventListener('keydown', closeModal); 
       scrollController.disableScroll(); // Отключение прокрутки страницы
     };
   
-    // Добавление обработчиков событий для кнопок открытия модального окна
     buttonElems.forEach(btn => {
       btn.addEventListener('click', openModal);
     });
   
-    // Добавление обработчика события для закрытия модального окна при клике по нему
     modalElem.addEventListener('click', closeModal);
   };
   
-  // Инициализация контроллера для всех модальных окон на странице
   modalController({
     modal: '.modal1',
     btnOpen: '.section__button1',
@@ -59,3 +57,32 @@ const modalController = ({ modal, btnOpen, btnClose, time = 300 }) => {
     btnOpen: '.section__button2',
     btnClose: '.modal__close',
   });
+
+
+  // Функция контроллера прокрутки страницы
+  const scrollController = {
+    scrollPosition: 0,
+  
+    // Отключение прокрутки страницы и фиксация текущей позиции прокрутки
+    disableScroll() {
+      this.scrollPosition = window.scrollY;
+      const paddingOffset = window.innerWidth - document.body.offsetWidth;
+      document.body.style.cssText = `
+        overflow: hidden;
+        position: fixed;
+        top: -${this.scrollPosition}px;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        padding-right: ${paddingOffset}px;
+      `;
+      document.documentElement.style.scrollBehavior = 'unset';
+    },
+  
+    // Включение прокрутки страницы и возврат к сохранённой позиции
+    enableScroll() {
+      document.body.style.cssText = '';
+      window.scrollTo({ top: this.scrollPosition });
+      document.documentElement.style.scrollBehavior = '';
+    },
+  }
